@@ -1,0 +1,277 @@
+  :root {
+    --bg: #0a0b0c;
+    --steel: #c7cbce;
+    --steel-bright: #eef0f2;
+    --steel-dim: #82878c;
+    --steel-faint: #3c4044;
+    --hairline: #2a2d30;
+    --track-wide: 0.52em;
+    --track-mid: 0.34em;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--steel);
+    font-family: "Helvetica Neue", Helvetica, "Arial Nova", Arial, sans-serif;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  /* ——— Kartenkante: die Seite ist die Karte ——— */
+  .card-edge {
+    position: fixed;
+    inset: 14px;
+    border: 1px solid var(--hairline);
+    border-radius: 22px;
+    pointer-events: none;
+    z-index: 5;
+  }
+  @media (min-width: 720px) {
+    .card-edge { inset: 22px; border-radius: 28px; }
+  }
+
+  /* ——— Szene (Hintergrund, bleibt beim Zoom-Scroll stehen) ——— */
+  #scene {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 1;
+  }
+
+  .stage {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    z-index: 2;
+    padding: clamp(38px, 7vh, 72px) 24px;
+  }
+
+  /* ——— Marke oben (wie Kartenvorderseite) ——— */
+  .brand h1 {
+    font-size: clamp(0.72rem, 0.6rem + 0.5vw, 0.95rem);
+    font-weight: 400;
+    letter-spacing: var(--track-wide);
+    text-transform: uppercase;
+    color: var(--steel);
+    white-space: nowrap;
+    padding-left: var(--track-wide); /* Tracking-Ausgleich für optische Mitte */
+  }
+  .brand h1::after {
+    content: "";
+    display: block;
+    width: 72px;
+    height: 1px;
+    margin: 14px auto 0;
+    background: var(--steel-faint);
+  }
+
+  /* ——— Menü: weitere Gravur-Zeile unter der Marke ——— */
+  .menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 26px;
+    margin-top: 16px;
+    font-size: clamp(0.6rem, 0.54rem + 0.3vw, 0.72rem);
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+  }
+  .menu a {
+    color: var(--steel-dim);
+    text-decoration: none;
+    padding: 4px 2px;
+    transition: color 0.25s ease;
+  }
+  .menu a[aria-current="page"] { color: var(--steel); }
+  .menu a[href]:hover { color: var(--steel-bright); }
+  .menu a:focus-visible {
+    outline: 1px solid var(--steel);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+  .menu .tag {
+    display: inline-block;
+    margin-left: 9px;
+    padding: 2px 6px 1px;
+    border: 1px solid var(--steel-faint);
+    border-radius: 3px;
+    font-size: 0.78em;
+    letter-spacing: 0.22em;
+    padding-left: calc(6px + 0.22em);
+    color: var(--steel-dim);
+    vertical-align: 0.1em;
+  }
+
+  /* ——— Tagline quer über dem Globus (JS koppelt top an die Globus-Mitte) ——— */
+  main {
+    position: absolute;
+    top: 46.5%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    pointer-events: none;
+  }
+  .tagline {
+    /* zweiter min()-Term: passt auf jeder Breite ins Passepartout */
+    font-size: min(clamp(1rem, 0.35rem + 4vw, 2.7rem), calc((100vw - 64px) / 19));
+    font-weight: 200;
+    letter-spacing: var(--track-mid);
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--steel-bright);
+    padding-left: var(--track-mid);
+    text-shadow: 0 0 24px rgba(10, 11, 12, 0.9);
+  }
+
+  /* Metall-Glint: ein Lichtzug über die Tagline beim Laden */
+  @supports (-webkit-background-clip: text) or (background-clip: text) {
+    .glint {
+      background: linear-gradient(105deg,
+        var(--steel-bright) 0%, var(--steel-bright) 38%,
+        #ffffff 50%,
+        var(--steel-bright) 62%, var(--steel-bright) 100%);
+      background-size: 320% 100%;
+      background-position: 100% 0;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      animation: glint 2.4s ease-in-out 0.9s 1 both;
+    }
+    @keyframes glint {
+      from { background-position: 100% 0; }
+      to   { background-position: 0% 0; }
+    }
+  }
+
+  /* ——— Person + Kontakt unten ——— */
+  .who .name {
+    font-size: clamp(1.05rem, 0.85rem + 1.2vw, 1.7rem);
+    font-weight: 300;
+    letter-spacing: var(--track-mid);
+    text-transform: uppercase;
+    color: var(--steel);
+    white-space: nowrap;
+    padding-left: var(--track-mid);
+  }
+  .who .role {
+    margin-top: 10px;
+    font-size: clamp(0.62rem, 0.55rem + 0.35vw, 0.78rem);
+    font-weight: 400;
+    letter-spacing: var(--track-wide);
+    text-transform: uppercase;
+    color: var(--steel-dim);
+    white-space: nowrap;
+    padding-left: var(--track-wide);
+  }
+  .who::after {
+    content: "";
+    display: block;
+    width: 72px;
+    height: 1px;
+    margin: 22px auto;
+    background: var(--steel-faint);
+  }
+
+  .contact {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+    font-size: clamp(0.78rem, 0.72rem + 0.35vw, 0.95rem);
+    letter-spacing: 0.14em;
+  }
+  .contact a {
+    color: var(--steel);
+    text-decoration: none;
+    padding: 6px 2px;
+    transition: color 0.25s ease;
+  }
+  .contact a:hover { color: var(--steel-bright); }
+  .contact a:focus-visible {
+    outline: 1px solid var(--steel);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+  .contact .dot {
+    color: var(--steel-dim);
+    user-select: none;
+  }
+
+  /* ——— Load-Sequenz (nur wenn JS läuft; .loaded blendet ein) ——— */
+  html.js #scene, html.js .brand, html.js .who,
+  html.js .contact, html.js .tagline { opacity: 0; }
+  html.loaded #scene { animation: fadein 1.6s ease 0.15s both; }
+  html.loaded .brand { animation: fadein 1.2s ease 0.5s both; }
+  html.loaded .who,
+  html.loaded .contact { animation: fadein 1.2s ease 0.7s both; }
+  html.loaded .tagline { animation: fadein 1.4s ease 0.6s both; }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    #scene, .brand, .who, .contact, .tagline { opacity: 1 !important; animation: none !important; }
+    .glint { animation: none !important; background-position: 0 0; }
+  }
+
+  /* ——— Fallback ohne WebGL/JS: statische Kartengrafik ——— */
+  #fallback {
+    position: fixed;
+    inset: 0;
+    display: none;
+    z-index: 1;
+  }
+  #fallback svg { width: 100%; height: 100%; }
+  html.no-webgl #fallback { display: block; }
+  html.no-webgl #scene { display: none; }
+  html:not(.js) #fallback { display: block; }
+  html:not(.js) #scene { display: none; }
+
+  @media (max-width: 420px) {
+    :root { --track-wide: 0.4em; --track-mid: 0.26em; }
+  }
+
+  /* Kontaktzeile: unterhalb ~540px passt sie nicht mehr in eine Zeile */
+  @media (max-width: 540px) {
+    .contact { flex-direction: column; gap: 10px; }
+    .contact .dot { display: none; }
+  }
+
+  /* Flache Viewports (Handy quer): kompakter Fuß, Tagline im Karten-Maß */
+  @media (max-height: 520px) {
+    .stage { padding: 22px 24px; }
+    .tagline { font-size: min(clamp(0.75rem, 4.6vh + 0.1rem, 1.5rem), calc((100vw - 64px) / 19)); }
+    .who .name { font-size: 1rem; }
+    .who .role { margin-top: 5px; font-size: 0.6rem; }
+    .who::after { margin: 12px auto; }
+    .brand h1::after { margin-top: 8px; }
+    .menu { margin-top: 9px; }
+  }
+
+  /* ——— Eyebrow über der Tagline (Products: "Launching Soon") ——— */
+  .eyebrow {
+    margin-bottom: 16px;
+    font-size: clamp(0.6rem, 0.54rem + 0.3vw, 0.72rem);
+    font-weight: 400;
+    letter-spacing: var(--track-wide);
+    text-transform: uppercase;
+    color: var(--steel-dim);
+    white-space: nowrap;
+    padding-left: var(--track-wide);
+  }
+  @media (max-height: 520px) {
+    .eyebrow { margin-bottom: 8px; }
+  }

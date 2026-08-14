@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Products — Bach Enterprises</title>
+<meta name="description" content="Bach Enterprises products. Launching soon: Project GameHub.">
+<meta name="theme-color" content="#0a0b0c">
+<link rel="canonical" href="https://bachent.com/products.html">
+<meta property="og:title" content="Products — Bach Enterprises">
+<meta property="og:description" content="Launching soon: Project GameHub.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bachent.com/products.html">
+<meta property="og:image" content="https://bachent.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.png" sizes="48x48">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a0b0c'/%3E%3Ccircle cx='32' cy='32' r='15' fill='none' stroke='%23c7cbce' stroke-width='2'/%3E%3Cellipse cx='32' cy='32' rx='15' ry='6.2' fill='none' stroke='%23c7cbce' stroke-width='2'/%3E%3Cellipse cx='32' cy='32' rx='6.2' ry='15' fill='none' stroke='%23c7cbce' stroke-width='2'/%3E%3Cellipse cx='32' cy='32' rx='26' ry='9' fill='none' stroke='%23888d91' stroke-width='1.6' stroke-dasharray='4 3' transform='rotate(-14 32 32)'/%3E%3C/svg%3E" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+<!-- Importmap MUSS vor allen module-Scripts stehen -->
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.js" } }
+</script>
+
+<!-- Sichtbarkeits-Gate, JS-unabhaengig robust: ohne JS ist alles sichtbar;
+     mit JS wird ausgeblendet und per .loaded eingeblendet. Scheitert das
+     3D-Modul (kein Importmap-Support, 404, Blocker), schaltet der
+     Error-Handler bzw. der Timeout auf den statischen Fallback um. -->
+<script>
+(function () {
+  var root = document.documentElement;
+  root.classList.add('js');
+  function fallback() {
+    if (!root.classList.contains('loaded')) root.classList.add('no-webgl', 'loaded');
+  }
+  window.addEventListener('error', function (e) {
+    var t = e.target;
+    if ((t && t.tagName === 'SCRIPT') || /module|import/i.test(e.message || '')) fallback();
+  }, true);
+  setTimeout(fallback, 3000);
+})();
+</script>
+
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+<canvas id="scene" aria-hidden="true"></canvas>
+
+<!-- Statischer Fallback (kein WebGL / kein JS): Orbit vorne unten kreuzend,
+     nach rechts steigend — wie auf der Kartenrückseite -->
+<div id="fallback" aria-hidden="true">
+  <svg viewBox="0 0 856 540" preserveAspectRatio="xMidYMid meet" fill="none">
+    <g stroke="#82878c" stroke-width="1.4">
+      <ellipse cx="428" cy="270" rx="230" ry="78" stroke-dasharray="10 8" transform="rotate(-12 428 270)"/>
+    </g>
+    <g>
+      <circle cx="428" cy="270" r="128" fill="#0a0b0c"/>
+      <g stroke="#c7cbce" stroke-width="1.4">
+        <circle cx="428" cy="270" r="128"/>
+        <ellipse cx="428" cy="270" rx="128" ry="52"/>
+        <ellipse cx="428" cy="270" rx="128" ry="102"/>
+        <ellipse cx="428" cy="270" rx="52" ry="128"/>
+        <ellipse cx="428" cy="270" rx="102" ry="128"/>
+        <line x1="300" y1="270" x2="556" y2="270"/>
+        <line x1="428" y1="142" x2="428" y2="398"/>
+      </g>
+    </g>
+    <g stroke="#a8adb1" stroke-width="1.4">
+      <path d="M 205.4 324.2 A 230 78 -12 0 0 653.4 229.0" stroke-dasharray="10 8"/>
+    </g>
+  </svg>
+</div>
+
+<div class="card-edge" aria-hidden="true"></div>
+
+<div class="stage">
+  <header class="brand">
+    <h1>Bach&nbsp;Enterprises</h1>
+    <nav class="menu" aria-label="Site">
+      <a href="./">Home</a>
+      <a href="products.html" aria-current="page" aria-label="Products — launching soon">Products<span class="tag" aria-hidden="true">Soon</span></a>
+    </nav>
+  </header>
+
+  <main id="taglineWrap">
+    <p class="eyebrow">Launching&nbsp;Soon</p>
+    <p class="tagline glint" data-em="16">Project&nbsp;GameHub</p>
+  </main>
+
+  <footer id="foot">
+    <div class="who">
+      <p class="name">Jakob&nbsp;Bach</p>
+      <p class="role">Founder&nbsp;&amp;&nbsp;CEO</p>
+    </div>
+    <nav class="contact" aria-label="Contact">
+      <a href="tel:+4915758901646" aria-label="Call +49 157 5890 1646">+49&nbsp;157&nbsp;5890&nbsp;1646</a>
+      <span class="dot" aria-hidden="true">·</span>
+      <a href="mailto:jb@bachent.com" aria-label="Email jb@bachent.com">jb@bachent.com</a>
+      <span class="dot" aria-hidden="true">·</span>
+      <a href="https://wa.me/4915758901646" rel="noopener" aria-label="Chat on WhatsApp">WhatsApp</a>
+    </nav>
+  </footer>
+</div>
+
+<script type="module" src="./scene.js"></script>
+</body>
+</html>
