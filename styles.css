@@ -1,0 +1,473 @@
+  :root {
+    --bg: #0a0b0c;
+    --steel: #c7cbce;
+    --steel-bright: #eef0f2;
+    --steel-dim: #82878c;
+    --steel-faint: #3c4044;
+    --hairline: #2a2d30;
+    --track-wide: 0.52em;
+    --track-mid: 0.34em;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--steel);
+    font-family: "Helvetica Neue", Helvetica, "Arial Nova", Arial, sans-serif;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  /* ——— Kartenkante: die Seite ist die Karte ——— */
+  .card-edge {
+    position: fixed;
+    inset: 14px;
+    border: 1px solid var(--hairline);
+    border-radius: 22px;
+    pointer-events: none;
+    z-index: 5;
+  }
+  @media (min-width: 720px) {
+    .card-edge { inset: 22px; border-radius: 28px; }
+  }
+
+  /* ——— Szene (Hintergrund, bleibt beim Zoom-Scroll stehen) ——— */
+  #scene {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 1;
+  }
+
+  .stage {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    z-index: 2;
+    padding: clamp(38px, 7vh, 72px) 24px;
+  }
+
+  /* ——— Marke oben (wie Kartenvorderseite) ——— */
+  .brand h1 {
+    font-size: clamp(0.72rem, 0.6rem + 0.5vw, 0.95rem);
+    font-weight: 400;
+    letter-spacing: var(--track-wide);
+    text-transform: uppercase;
+    color: var(--steel);
+    white-space: nowrap;
+    padding-left: var(--track-wide); /* Tracking-Ausgleich für optische Mitte */
+  }
+  .brand h1::after {
+    content: "";
+    display: block;
+    width: 72px;
+    height: 1px;
+    margin: 14px auto 0;
+    background: var(--steel-faint);
+  }
+
+  /* ——— Menü: weitere Gravur-Zeile unter der Marke ——— */
+  .menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 26px;
+    margin-top: 16px;
+    font-size: clamp(0.6rem, 0.54rem + 0.3vw, 0.72rem);
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+  }
+  .menu a {
+    color: var(--steel-dim);
+    text-decoration: none;
+    padding: 4px 2px;
+    transition: color 0.25s ease;
+  }
+  .menu a[aria-current="page"] { color: var(--steel); }
+  .menu a[href]:hover { color: var(--steel-bright); }
+  .menu a:focus-visible {
+    outline: 1px solid var(--steel);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+
+  /* ——— Tabs (Products): kleinere Gravur-Zeile unter dem Menü.
+     Umschalten ohne JS über :target (#marketing / #project-1), Standard ist
+     Marketing. Ohne :has()-Support bleiben beide Panels sichtbar. ——— */
+  .tabs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    margin-top: 12px;
+    font-size: clamp(0.56rem, 0.5rem + 0.28vw, 0.66rem);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+  .tabs a {
+    color: var(--steel-dim);
+    text-decoration: none;
+    padding: 6px 2px 5px;
+    padding-left: calc(2px + 0.3em); /* Tracking-Ausgleich */
+    border-bottom: 1px solid transparent;
+    transition: color 0.25s ease, border-color 0.25s ease;
+  }
+  .tabs a:hover { color: var(--steel-bright); }
+  .tabs a:focus-visible {
+    outline: 1px solid var(--steel);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+  @supports selector(:has(a)) {
+    .panel-project { display: none; }
+    body:has(#project-1:target) .panel-marketing { display: none; }
+    body:has(#project-1:target) .panel-project { display: block; }
+    body:has(#project-1:target) .stage.has-offer { row-gap: 0; }
+    body:not(:has(#project-1:target)) .tabs a[href="#marketing"],
+    body:has(#project-1:target) .tabs a[href="#project-1"] {
+      color: var(--steel);
+      border-bottom-color: var(--steel-dim);
+    }
+  }
+
+  /* ——— Tagline quer über dem Globus (JS koppelt top an die Globus-Mitte) ——— */
+  main {
+    position: absolute;
+    top: 46.5%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    pointer-events: none;
+  }
+  .tagline {
+    /* zweiter min()-Term: passt auf jeder Breite ins Passepartout */
+    font-size: min(clamp(1rem, 0.35rem + 4vw, 2.7rem), calc((100vw - 64px) / 19));
+    font-weight: 200;
+    letter-spacing: var(--track-mid);
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--steel-bright);
+    padding-left: var(--track-mid);
+    text-shadow: 0 0 24px rgba(10, 11, 12, 0.9);
+  }
+
+  /* Metall-Glint: ein Lichtzug über die Tagline beim Laden */
+  @supports (-webkit-background-clip: text) or (background-clip: text) {
+    .glint {
+      background: linear-gradient(105deg,
+        var(--steel-bright) 0%, var(--steel-bright) 38%,
+        #ffffff 50%,
+        var(--steel-bright) 62%, var(--steel-bright) 100%);
+      background-size: 320% 100%;
+      background-position: 100% 0;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      animation: glint 2.4s ease-in-out 0.9s 1 both;
+    }
+    @keyframes glint {
+      from { background-position: 100% 0; }
+      to   { background-position: 0% 0; }
+    }
+  }
+
+  /* ——— Angebot unter dem Globus (Products/Marketing, Contact) ——— */
+  .offer { margin-bottom: 30px; }
+  /* Schmal oder flach: Mindestband für den Globus; der Fuß rutscht dafür
+     unter den Falz (Seite scrollt), der CTA bleibt darüber */
+  @media (max-width: 540px), (max-height: 520px) {
+    .stage.has-offer { row-gap: 220px; }
+    /* Szene scrollt hier mit, damit Globus und Tagline zusammenbleiben */
+    body:has(.stage.has-offer) #scene,
+    body:has(.stage.has-offer) #fallback { position: absolute; }
+  }
+  .offer-text {
+    max-width: 31em;
+    margin: 0 auto 18px;
+    font-size: clamp(0.82rem, 0.76rem + 0.3vw, 0.95rem);
+    line-height: 1.6;
+    letter-spacing: 0.04em;
+    color: var(--steel);
+  }
+  .cta {
+    display: inline-block;
+    padding: 13px 26px 12px;
+    padding-left: calc(26px + 0.34em); /* Tracking-Ausgleich */
+    border: 1px solid var(--steel-dim);
+    border-radius: 3px;
+    color: var(--steel-bright);
+    text-decoration: none;
+    font-size: clamp(0.66rem, 0.6rem + 0.3vw, 0.78rem);
+    font-weight: 400;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    transition: border-color 0.25s ease, background-color 0.25s ease;
+  }
+  .cta:hover {
+    border-color: var(--steel);
+    background-color: rgba(199, 203, 206, 0.06);
+  }
+  .cta:focus-visible {
+    outline: 1px solid var(--steel);
+    outline-offset: 4px;
+  }
+  /* Datenschutz-Hinweis unter dem CTA (Info nach Art. 13, keine Einwilligung) */
+  .offer-note {
+    max-width: 30em;
+    margin: 12px auto 0;
+    font-size: clamp(0.66rem, 0.62rem + 0.15vw, 0.74rem);
+    line-height: 1.5;
+    letter-spacing: 0.03em;
+    color: var(--steel-dim);
+  }
+  .offer-note a {
+    color: var(--steel);
+    text-decoration: underline;
+    text-decoration-color: var(--steel-faint);
+    text-underline-offset: 3px;
+  }
+  .offer-note a:hover { text-decoration-color: var(--steel); }
+
+  /* ——— Person + Kontakt unten ——— */
+  .who .name {
+    font-size: clamp(1.05rem, 0.85rem + 1.2vw, 1.7rem);
+    font-weight: 300;
+    letter-spacing: var(--track-mid);
+    text-transform: uppercase;
+    color: var(--steel);
+    white-space: nowrap;
+    padding-left: var(--track-mid);
+  }
+  .who .role {
+    margin-top: 10px;
+    font-size: clamp(0.62rem, 0.55rem + 0.35vw, 0.78rem);
+    font-weight: 400;
+    letter-spacing: var(--track-wide);
+    text-transform: uppercase;
+    color: var(--steel-dim);
+    white-space: nowrap;
+    padding-left: var(--track-wide);
+  }
+  .who::after {
+    content: "";
+    display: block;
+    width: 72px;
+    height: 1px;
+    margin: 22px auto;
+    background: var(--steel-faint);
+  }
+
+  .contact {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+    font-size: clamp(0.78rem, 0.72rem + 0.35vw, 0.95rem);
+    letter-spacing: 0.14em;
+  }
+  .contact a {
+    color: var(--steel);
+    text-decoration: none;
+    padding: 6px 2px;
+    transition: color 0.25s ease;
+  }
+  .contact a:hover { color: var(--steel-bright); }
+  .contact a:focus-visible {
+    outline: 1px solid var(--steel);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+  .contact .dot {
+    color: var(--steel-dim);
+    user-select: none;
+  }
+
+  /* ——— Impressum-Link: leiseste Gravur-Zeile ganz unten ——— */
+  .legal-link {
+    margin-top: 12px;
+    font-size: clamp(0.54rem, 0.5rem + 0.2vw, 0.62rem);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+  .legal-link a {
+    display: inline-block;
+    padding: 6px 2px;
+    padding-left: calc(2px + 0.3em); /* Tracking-Ausgleich */
+    color: var(--steel-dim);
+    text-decoration: none;
+    transition: color 0.25s ease;
+  }
+  .legal-link a:hover,
+  .legal-link a[aria-current="page"] { color: var(--steel); }
+  .legal-link .dot {
+    margin: 0 12px;
+    color: var(--steel-faint);
+    user-select: none;
+  }
+  .legal-link a:focus-visible {
+    outline: 1px solid var(--steel);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+
+  /* ——— Load-Sequenz (nur wenn JS läuft; .loaded blendet ein) ——— */
+  html.js #scene, html.js .brand, html.js .offer, html.js .who,
+  html.js .contact, html.js .legal-link, html.js .tagline { opacity: 0; }
+  html.loaded #scene { animation: fadein 1.6s ease 0.15s both; }
+  html.loaded .brand { animation: fadein 1.2s ease 0.5s both; }
+  html.loaded .offer,
+  html.loaded .who,
+  html.loaded .contact,
+  html.loaded .legal-link { animation: fadein 1.2s ease 0.7s both; }
+  html.loaded .tagline { animation: fadein 1.4s ease 0.6s both; }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    #scene, .brand, .offer, .who, .contact, .legal-link, .tagline { opacity: 1 !important; animation: none !important; }
+    .glint { animation: none !important; background-position: 0 0; }
+  }
+
+  /* ——— Fallback ohne WebGL/JS: statische Kartengrafik ——— */
+  #fallback {
+    position: fixed;
+    inset: 0;
+    display: none;
+    z-index: 1;
+  }
+  #fallback svg { width: 100%; height: 100%; }
+  html.no-webgl #fallback { display: block; }
+  html.no-webgl #scene { display: none; }
+  html:not(.js) #fallback { display: block; }
+  html:not(.js) #scene { display: none; }
+
+  @media (max-width: 420px) {
+    :root { --track-wide: 0.4em; --track-mid: 0.26em; }
+  }
+
+  /* Kontaktzeile: unterhalb ~540px passt sie nicht mehr in eine Zeile */
+  @media (max-width: 540px) {
+    .contact { flex-direction: column; gap: 10px; }
+    .contact .dot { display: none; }
+  }
+
+  /* Flache Viewports (Handy quer): kompakter Fuß, Tagline im Karten-Maß */
+  @media (max-height: 520px) {
+    .stage { padding: 22px 24px; }
+    .tagline { font-size: min(clamp(0.75rem, 4.6vh + 0.1rem, 1.5rem), calc((100vw - 64px) / 19)); }
+    .who .name { font-size: 1rem; }
+    .who .role { margin-top: 5px; font-size: 0.6rem; }
+    .who::after { margin: 12px auto; }
+    .brand h1::after { margin-top: 8px; }
+    .menu { margin-top: 9px; }
+    .tabs { margin-top: 6px; }
+    .offer { margin-bottom: 14px; }
+    .offer-text { margin-bottom: 10px; font-size: 0.78rem; line-height: 1.45; }
+    .cta { padding-top: 9px; padding-bottom: 8px; }
+    .offer-note { margin-top: 6px; }
+    .legal-link { margin-top: 4px; }
+  }
+
+  /* ——— Eyebrow über der Tagline (Products: "Launching Soon") ——— */
+  .eyebrow {
+    margin-bottom: 16px;
+    font-size: clamp(0.6rem, 0.54rem + 0.3vw, 0.72rem);
+    font-weight: 400;
+    letter-spacing: var(--track-wide);
+    text-transform: uppercase;
+    color: var(--steel-dim);
+    white-space: nowrap;
+    padding-left: var(--track-wide);
+  }
+  @media (max-height: 520px) {
+    .eyebrow { margin-bottom: 8px; }
+  }
+
+  /* ——— Textseiten ohne 3D-Szene (Legal Notice): kein Sichtbarkeits-Gate,
+     kein scene.js; main fließt normal statt über dem Globus zu schweben ——— */
+  .stage-doc { justify-content: flex-start; }
+  main.doc {
+    position: static;
+    transform: none;
+    pointer-events: auto;
+    width: 100%;
+    max-width: 34rem;
+    margin: clamp(40px, 9vh, 88px) auto 0;
+    text-align: left;
+  }
+  .doc h2 {
+    font-size: clamp(1.1rem, 0.9rem + 1vw, 1.6rem);
+    font-weight: 200;
+    letter-spacing: var(--track-mid);
+    text-transform: uppercase;
+    color: var(--steel-bright);
+  }
+  .doc .doc-sub {
+    margin-top: 10px;
+    font-size: clamp(0.6rem, 0.54rem + 0.3vw, 0.72rem);
+    font-weight: 400;
+    letter-spacing: var(--track-wide);
+    text-transform: uppercase;
+    color: var(--steel-dim);
+  }
+  .doc h3 {
+    margin: 36px 0 10px;
+    font-size: clamp(0.6rem, 0.54rem + 0.3vw, 0.72rem);
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--steel-dim);
+  }
+  .doc p {
+    font-size: clamp(0.88rem, 0.82rem + 0.25vw, 1rem);
+    line-height: 1.7;
+    letter-spacing: 0.02em;
+    color: var(--steel);
+  }
+  .doc a {
+    color: var(--steel-bright);
+    text-decoration: underline;
+    text-decoration-color: var(--steel-faint);
+    text-underline-offset: 3px;
+  }
+  .doc a:hover { text-decoration-color: var(--steel); }
+  .doc p + p { margin-top: 12px; }
+  .doc strong { font-weight: 400; color: var(--steel-bright); }
+  .doc .doc-lead { margin-top: 32px; }
+  .doc ul { margin: 0; padding-left: 1.1em; }
+  .doc li {
+    font-size: clamp(0.88rem, 0.82rem + 0.25vw, 1rem);
+    line-height: 1.7;
+    letter-spacing: 0.02em;
+    color: var(--steel);
+  }
+  .doc li + li { margin-top: 6px; }
+  .doc li::marker { color: var(--steel-dim); }
+  /* Widerspruchsrecht muss hervorgehoben sein (Art. 21 Abs. 4 DSGVO) */
+  .doc .doc-emph {
+    padding: 14px 16px;
+    border: 1px solid var(--steel-faint);
+    border-radius: 3px;
+    color: var(--steel-bright);
+  }
+  .doc .doc-date {
+    margin-top: 36px;
+    font-size: clamp(0.6rem, 0.54rem + 0.3vw, 0.72rem);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--steel-dim);
+  }
+  .doc-foot { margin-top: auto; padding-top: 56px; }
